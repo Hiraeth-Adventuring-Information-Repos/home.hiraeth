@@ -4,6 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HAG - Hiraeth Archives & Guides</title>
+    <meta
+      name="description"
+      content="Central portal for Hiraeth Archives & Guides resources, including Foundry VTT, interactive maps, miniatures, stat tools, and wiki guides."
+    />
+    <link rel="canonical" href="https://home.hiraeth.wiki/" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hiraeth Archives & Guides" />
+    <meta property="og:title" content="HAG - Hiraeth Archives & Guides" />
+    <meta
+      property="og:description"
+      content="Central portal for Hiraeth Archives & Guides resources, including Foundry VTT, interactive maps, miniatures, stat tools, and wiki guides."
+    />
+    <meta property="og:url" content="https://home.hiraeth.wiki/" />
+    <meta
+      property="og:image"
+      content="https://home.hiraeth.wiki/assets/images/wiki-1920x1080.jpg"
+    />
+    <meta
+      property="og:image:alt"
+      content="Hiraeth Archives & Guides portal preview image"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HAG - Hiraeth Archives & Guides" />
+    <meta
+      name="twitter:description"
+      content="Central portal for Hiraeth Archives & Guides resources, including Foundry VTT, interactive maps, miniatures, stat tools, and wiki guides."
+    />
+    <meta
+      name="twitter:image"
+      content="https://home.hiraeth.wiki/assets/images/wiki-1920x1080.jpg"
+    />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,19 +49,19 @@
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="images/apple-touch-icon.png"
+      href="assets/favicon/apple-touch-icon.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="images/favicon-32x32.png"
+      href="assets/favicon/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="images/favicon-16x16.png"
+      href="assets/favicon/favicon-16x16.png"
     />
     <!-- <link rel="manifest" href="/site.webmanifest"> -->
 
@@ -457,6 +489,56 @@
       document.addEventListener("DOMContentLoaded", () => {
         const themeToggle = document.getElementById("theme-toggle");
         const htmlElement = document.documentElement;
+        const TRACKING_CONSENT_KEY = "tracking_consent";
+        const POSTHOG_API_KEY = "REPLACE_WITH_POSTHOG_API_KEY";
+        const POSTHOG_API_HOST = "https://us.i.posthog.com";
+
+        let posthogLoaded = false;
+
+        const REGULATED_TIMEZONE_PREFIXES = [
+          "Europe/",
+          "Atlantic/Canary",
+          "Atlantic/Faroe",
+          "Atlantic/Madeira",
+          "Africa/Ceuta",
+        ];
+
+        const REGULATED_COUNTRY_CODES = [
+          // EU/EEA/UK/CH baseline
+          "AT",
+          "BE",
+          "BG",
+          "HR",
+          "CY",
+          "CZ",
+          "DK",
+          "EE",
+          "FI",
+          "FR",
+          "DE",
+          "GR",
+          "HU",
+          "IE",
+          "IT",
+          "LV",
+          "LT",
+          "LU",
+          "MT",
+          "NL",
+          "PL",
+          "PT",
+          "RO",
+          "SK",
+          "SI",
+          "ES",
+          "SE",
+          "IS",
+          "LI",
+          "NO",
+          "GB",
+          "UK",
+          "CH",
+        ];
 
         const applyTheme = (theme) => {
           htmlElement.setAttribute("data-theme", theme);
@@ -481,6 +563,108 @@
           ).matches;
           applyTheme(prefersDark ? "dark" : "light");
         }
+
+        const getLocaleCountry = () => {
+          const locale = navigator.language || "";
+          const match = locale.match(/-([A-Za-z]{2})$/);
+          return match ? match[1].toUpperCase() : null;
+        };
+
+        const isRegulatedRegion = () => {
+          const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+          const countryCode = getLocaleCountry();
+          const timezoneIsRegulated = REGULATED_TIMEZONE_PREFIXES.some((prefix) =>
+            timezone.startsWith(prefix)
+          );
+          const countryIsRegulated = countryCode
+            ? REGULATED_COUNTRY_CODES.includes(countryCode)
+            : false;
+
+          // Safer default: if region signal is missing, treat as regulated.
+          if (!timezone && !countryCode) return true;
+          return timezoneIsRegulated || countryIsRegulated;
+        };
+
+        const loadPostHogOnce = () => {
+          if (posthogLoaded || window.posthog) return;
+          if (
+            POSTHOG_API_KEY === "REPLACE_WITH_POSTHOG_API_KEY" ||
+            !POSTHOG_API_HOST
+          ) {
+            return;
+          }
+
+          !function(t,e){
+            var o,n,p,r;
+            e.__SV=1;
+            window.posthog=e;
+            e._i=[];
+            e.init=function(i,s,a){
+              function g(t,e){
+                var o=e.split(".");
+                2==o.length&&(t=t[o[0]],e=o[1]);
+                t[e]=function(){
+                  t.push([e].concat(Array.prototype.slice.call(arguments,0)));
+                };
+              }
+              (p=t.createElement("script")).type="text/javascript";
+              p.async=!0;
+              p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js";
+              (r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);
+              var u=e;
+              for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){
+                var e="posthog";
+                return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e;
+              },u.people.toString=function(){ return u.toString(1)+".people (stub)"; },o="init capture register register_once unregister unregister_for_session reset_config set_config set_opt_out_tracking set_opt_in_tracking has_opted_in_tracking has_opted_out_tracking opt_in_capturing opt_out_capturing get_distinct_id alias identify set_person_properties group set_group remove_group".split(" "),n=0;n<o.length;n++)g(u,o[n]);
+              e._i.push([i,s,a]);
+            };
+          }(document,window.posthog||[]);
+
+          window.posthog.init(POSTHOG_API_KEY, {
+            api_host: POSTHOG_API_HOST,
+            capture_pageview: true,
+          });
+          posthogLoaded = true;
+        };
+
+        const getConsentState = () => localStorage.getItem(TRACKING_CONSENT_KEY);
+
+        const applyTrackingPolicy = () => {
+          const consent = getConsentState();
+          const regulated = isRegulatedRegion();
+
+          if (consent === "denied") {
+            if (window.posthog && typeof window.posthog.opt_out_capturing === "function") {
+              window.posthog.opt_out_capturing();
+            }
+            return;
+          }
+
+          if (regulated) {
+            if (consent === "granted") loadPostHogOnce();
+            return;
+          }
+
+          loadPostHogOnce();
+        };
+
+        window.hiraethTracking = {
+          grantConsent: () => {
+            localStorage.setItem(TRACKING_CONSENT_KEY, "granted");
+            loadPostHogOnce();
+            if (window.posthog && typeof window.posthog.opt_in_capturing === "function") {
+              window.posthog.opt_in_capturing();
+            }
+          },
+          denyConsent: () => {
+            localStorage.setItem(TRACKING_CONSENT_KEY, "denied");
+            if (window.posthog && typeof window.posthog.opt_out_capturing === "function") {
+              window.posthog.opt_out_capturing();
+            }
+          },
+        };
+
+        applyTrackingPolicy();
       });
     </script>
   </body>
