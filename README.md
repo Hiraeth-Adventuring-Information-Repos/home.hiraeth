@@ -17,10 +17,12 @@ Key Archives links in the page:
 - [Interactive Maps](https://maps.hiraeth.wiki)
 - [Miniatures Library](https://minis.hiraeth.wiki)
 - [Stat Block Maker](https://stats.hiraeth.wiki/)
+- [Gem Standings](https://gems.hiraeth.wiki)
 - [The Wiki](https://www.hiraeth.wiki)
 
 Adventurer's Tools links in the page:
 - [Character Sheets](https://cloud.jaxsnjohnson.com/s/2Cd8Ez8MNrNzDkT)
+- [Gem Standings](https://gems.hiraeth.wiki)
 - Useful Videos for New Players (placeholder/TBD, currently `#`)
 - [Guide: How to Create a Character](https://www.hiraeth.wiki/books/basic-rules-how-to-make-a-pc)
 
